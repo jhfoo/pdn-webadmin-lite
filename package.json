@@ -18,5 +18,9 @@
     "typeface-lato": "^1.1.13",
     "vue": "latest",
     "vue-router": "latest"
+  },
+  "devDependencies": {
+    "axios": "^1.8.1",
+    "serve": "^14.2.4"
   }
 }
