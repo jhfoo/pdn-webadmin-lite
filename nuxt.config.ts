@@ -1,8 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: "2025-03-01",
+  compatibilityDate: '2025-03-01',
   devtools: { enabled: true },
-  modules: ['nuxt-quasar-ui'],
+  modules: [
+    'nuxt-quasar-ui', 
+    '@nuxt/fonts'
+  ],
   quasar: {
     // Optional string | boolean
     // sassVariables: "assets/quasar.variables.scss",
@@ -20,4 +23,5 @@ export default defineNuxtConfig({
       dark: true,
     },
   },
+  css: ['@/assets/css/app.css'],
 })

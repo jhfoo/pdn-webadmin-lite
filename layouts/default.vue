@@ -13,7 +13,7 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          PowerDNS Web Admin Lite
         </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>

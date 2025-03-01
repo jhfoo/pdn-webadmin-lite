@@ -1,7 +1,9 @@
 <template>
   <q-page class="q-pl-lg">
-    <p class="text-h6 q-pt-md">
-      Plugin Showcase
+    <div class="text-h6 q-pt-md">What is this</div>
+    <p class="q-pt-md">
+      This is the web management interface for PowerDNS. It's unofficial, barely 
+      secure, and intended for home use.
     </p>
     <p class="text-h6 q-pt-md">
       Directive Showcase
