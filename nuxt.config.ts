@@ -25,6 +25,7 @@ export default defineNuxtConfig({
     config: {
       dark: true,
     },
+    plugins: ['Notify'],
   },
   css: ['@/assets/css/app.css'],
 })

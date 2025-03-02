@@ -131,8 +131,6 @@ async function getRecordsInZone(zone) {
 }
 
 function onEdit(row) {
-  console.log('edit')
-  console.log(row)
   drawer.setDrawerComponent(shallowRef(EditRRSet), {
     zone: zone.value,
     rrset: row,

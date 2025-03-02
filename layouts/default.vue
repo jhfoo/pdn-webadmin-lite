@@ -26,11 +26,11 @@
     </q-page-container>
 
     <q-footer class="bg-grey-8 text-white">
-      <q-toolbar>
-        <div>Title</div>
+      <q-bar>
+        <q-btn dense flat icon="event" />
         <q-space />
         <div>Quasar v{{ $q.version }}</div>
-      </q-toolbar>
+      </q-bar>
     </q-footer>
   </q-layout>
 </template>

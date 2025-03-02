@@ -5,8 +5,8 @@ k<template>
     <q-btn dense flat round icon="close" @click="drawer.closeRightDrawer"  />
   </q-toolbar>
   <div class="q-px-md">
-    Zone: {{ zone  }}<br/>
-    Type: {{ rrset.type  }}<br/>
+    <q-input v-model="RrsetZone" label="Zone" borderless disable/>
+    <q-input v-model="RrsetType" label="Type" borderless disable/>
     <q-input v-model="rrset.value" label="Value"/>
     <q-input v-model="rrset.ttl" label="TTL"/>
     <q-btn-group class="q-pt-md" spread flat>
@@ -20,9 +20,13 @@ k<template>
 <script setup lang="ts">
 import { useDrawerStore } from '@/stores/drawer'
 import axios from 'axios'
+import { useQuasar } from 'quasar'
 
+const $q = useQuasar()
 const drawer = useDrawerStore()
 const props = defineProps(['zone', 'rrset'])
+const RrsetZone = props.zone
+const RrsetType = props.rrset.type
 
 function getTitle() {
   if (props.rrset.name) {
@@ -51,9 +55,13 @@ async function onUpdate() {
       }
     })
     console.log(resp)
+    drawer.closeRightDrawer()
   } catch (err) {
+    $q.notify({
+      message: err,
+      color: 'purple'
+    })
     console.error(err)
   }
-  drawer.closeRightDrawer()
 }
 </script>
