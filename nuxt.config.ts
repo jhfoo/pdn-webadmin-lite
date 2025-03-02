@@ -4,8 +4,10 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-03-01',
   devtools: { enabled: true },
   modules: [
+    '@pinia/nuxt',
     'nuxt-quasar-ui', 
-    '@nuxt/fonts'
+    '@nuxt/fonts', 
+    '@pinia/nuxt',
   ],
   quasar: {
     // Optional string | boolean

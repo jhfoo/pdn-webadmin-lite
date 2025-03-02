@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@nuxt/fonts": "^0.10.3",
+    "@pinia/nuxt": "^0.10.1",
     "@quasar/extras": "^1.16.17",
     "nuxt": "^3.15.4",
     "nuxt-quasar-ui": "^2.1.12",
+    "pinia": "^3.0.1",
     "quasar": "^2.17.7",
     "typeface-lato": "^1.1.13",
     "vue": "latest",

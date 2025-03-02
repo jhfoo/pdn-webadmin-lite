@@ -17,7 +17,7 @@
       :columns="columns"
       row-key="name" dense>
       <template v-slot:top="props">
-        <div class="q-table__title">Domain Entries</div>
+        <div class="q-table__title">{{ zone }} Entries</div>
 
         <q-space />
 
@@ -42,18 +42,18 @@
 </template>
 
 <script setup lang="ts">
-</script>
-
-<script setup lang="ts">
 import axios from 'axios'
 import { useQuasar } from 'quasar'
+import { useDrawerStore } from '@/stores/drawer'
+import EditRRSet from '@/components/EditRRSet'
 
+const drawer = useDrawerStore()
 const DomainRecords = ref([])
 const SelectedRecord = ref([])
 const columns = ref([]) 
 
 const $q = useQuasar()
-console.log($q.screen.width)
+
 columns.value = $q.screen.width > 412 ? [{
     name: 'rec',
     label: 'Record',
@@ -94,40 +94,49 @@ columns.value = $q.screen.width > 412 ? [{
     align: 'center' 
   }
 ]
-console.log('minimize')
 
+const zone = ref('kungfoo.local')
+await getRecordsInZone('kungfoo.local')
 
-try {
-  const resp = await axios.get('http://192.168.130.25:8081/api/v1/servers/localhost/zones/kungfoo.local', {
-    headers: {
-      'X-API-KEY': 'changeme'
-    }
-  })
+async function getRecordsInZone(zone) {
+  try {
+    const resp = await axios.get('http://192.168.130.25:8081/api/v1/servers/localhost/zones/' + zone, {
+      headers: {
+        'X-API-KEY': 'changeme'
+      }
+    })
 
-  const MAX_VALUE_LEN = 20
+    const MAX_VALUE_LEN = 20
 
-  DomainRecords.value = resp.data.rrsets.map((item) => {
-    return {
-      name: item.name,
-      value: item.records[0].content.length <= MAX_VALUE_LEN ? item.records[0].content : item.records[0].content.substring(0,MAX_VALUE_LEN - 3) + '...',
-      type: item.type,
-      ttl: item.ttl,
-    }
-  }).sort((a,b) => {
-    if (a.name < b.name) {
-      return -1
-    }
-    if (a.name > b.name) {
-      return 1
-    }
-    return 0
-  })
-  console.log(resp.data.rrsets)
-} catch (err) {
-  console.error(err)
+    DomainRecords.value = resp.data.rrsets.map((item) => {
+      return {
+        name: item.name,
+        value: item.records[0].content.length <= MAX_VALUE_LEN ? item.records[0].content : item.records[0].content.substring(0,MAX_VALUE_LEN - 3) + '...',
+        type: item.type,
+        ttl: item.ttl,
+      }
+    }).sort((a,b) => {
+      if (a.name < b.name) {
+        return -1
+      }
+      if (a.name > b.name) {
+        return 1
+      }
+      return 0
+    })
+    console.log(resp.data.rrsets)
+  } catch (err) {
+    console.error(err)
+  }
 }
 
 function onEdit(row) {
+  console.log('edit')
   console.log(row)
+  drawer.setDrawerComponent(shallowRef(EditRRSet), {
+    zone: zone.value,
+    rrset: row,
+  })
+  drawer.openRightDrawer()
 }
 </script>
