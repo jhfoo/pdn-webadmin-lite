@@ -17,11 +17,12 @@
       :columns="columns"
       row-key="name" dense>
       <template v-slot:top="props">
-        <div class="q-table__title">{{ zone }} Entries</div>
+        <div class="q-table__title">{{ zone }}</div>
 
         <q-space />
 
         <div >
+          <q-btn flat>Reload</q-btn>
           <q-btn flat>New</q-btn>
         </div>
       </template>
@@ -61,6 +62,12 @@ columns.value = $q.screen.width > 412 ? [{
     field: row => row.name,
     align: 'left',
   }, {
+    name: 'type',
+    label: 'Type',
+    sortable: true,
+    field: row => row.type,
+    align: 'center'
+  }, {
     name: 'ttl',
     label: 'TTL',
     sortable: true,
@@ -70,8 +77,12 @@ columns.value = $q.screen.width > 412 ? [{
     label: 'Value',
     sortable: true,
     field: row => row.value,
-  },
-  { 
+  },{
+    name: 'count',
+    label: 'Count',
+    field: row => row.ValueCount,
+    align: 'center',
+  }, { 
     name: 'actions', 
     label: 'Action',
     align: 'center' 
@@ -87,8 +98,7 @@ columns.value = $q.screen.width > 412 ? [{
     label: 'Value',
     sortable: true,
     field: row => row.value,
-  },
-  { 
+  }, { 
     name: 'actions', 
     label: 'Action',
     align: 'center' 
@@ -109,11 +119,18 @@ async function getRecordsInZone(zone) {
     const MAX_VALUE_LEN = 20
 
     DomainRecords.value = resp.data.rrsets.map((item) => {
+      const values = item.records.map((record) => {
+        console.log(item.name + ' = ' + record.content + ', ' + record.content.length)
+        return record.content.length <= MAX_VALUE_LEN ? record.content : record.content.substring(0,MAX_VALUE_LEN - 3) + '...'
+      })
+
       return {
         name: item.name,
-        value: item.records[0].content.length <= MAX_VALUE_LEN ? item.records[0].content : item.records[0].content.substring(0,MAX_VALUE_LEN - 3) + '...',
+        value: values[0],
+        ValueCount: values.length,
         type: item.type,
         ttl: item.ttl,
+        data: item,
       }
     }).sort((a,b) => {
       if (a.name < b.name) {
