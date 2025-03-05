@@ -22,8 +22,8 @@
         <q-space />
 
         <div >
-          <q-btn flat>Reload</q-btn>
-          <q-btn flat>New</q-btn>
+          <q-btn @click="onReload()" flat>Reload</q-btn>
+          <q-btn @click="onNew()" flat>New</q-btn>
         </div>
       </template>
 
@@ -120,7 +120,6 @@ async function getRecordsInZone(zone) {
 
     DomainRecords.value = resp.data.rrsets.map((item) => {
       const values = item.records.map((record) => {
-        console.log(item.name + ' = ' + record.content + ', ' + record.content.length)
         return record.content.length <= MAX_VALUE_LEN ? record.content : record.content.substring(0,MAX_VALUE_LEN - 3) + '...'
       })
 
@@ -147,11 +146,29 @@ async function getRecordsInZone(zone) {
   }
 }
 
+async function onReload() {
+  console.log('Reloading...')
+  await getRecordsInZone(zone.value)
+}
+
+function onNew() {
+  onEdit({
+    data: {
+      records: [{
+        content: null,
+      }]
+    }
+  })  
+}
+
 function onEdit(row) {
-  drawer.setDrawerComponent(shallowRef(EditRRSet), {
-    zone: zone.value,
-    rrset: row,
-  })
-  drawer.openRightDrawer()
+  drawer.setDrawerComponent(shallowRef(EditRRSet), 
+    {
+      zone: zone.value,
+      rrset: row,
+      // cmdRefresh: onReload,
+    }
+  )
+  drawer.openRightDrawer(onReload)
 }
 </script>

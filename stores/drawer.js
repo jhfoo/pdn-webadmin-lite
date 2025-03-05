@@ -9,6 +9,8 @@ export const useDrawerStore = defineStore('drawer', {
     showRightDrawer: false,
     DrawerComponent: null,
     DrawerComponentProps: {},
+    DrawerComponentKey: null,
+    CloseDrawerCallback: null,
   }),
   getters: {
     isShowRightDrawer: (state) => state.showRightDrawer,
@@ -17,15 +19,18 @@ export const useDrawerStore = defineStore('drawer', {
     toggleRightDrawer() {
       this.showRightDrawer = !this.showRightDrawer
     },
-    openRightDrawer() {
+    openRightDrawer(CloseDrawerCallback) {
+      this.CloseDrawerCallback = CloseDrawerCallback
       this.showRightDrawer = true
     },
-    closeRightDrawer() {
+    async closeRightDrawer(isCallback) {
+      if (isCallback) {
+        await this.CloseDrawerCallback()
+      } 
       this.showRightDrawer = false
     },
     setDrawerComponent(NewComponent, NewComponentProps) {
       this.DrawerComponent = NewComponent
-
       this.DrawerComponentProps = NewComponentProps ? NewComponentProps : {}
     }
   },
