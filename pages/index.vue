@@ -105,6 +105,8 @@ columns.value = $q.screen.width > 412 ? [{
   }
 ]
 
+const DEFAUlT_TTL = 300
+const DEFAULT_TYPE = 'A'
 const zone = ref('kungfoo.local')
 await getRecordsInZone('kungfoo.local')
 
@@ -124,7 +126,7 @@ async function getRecordsInZone(zone) {
       })
 
       return {
-        name: item.name,
+        name: item.name.startsWith(zone) ? '' : item.name.replace('.' + zone + '.', ''),
         value: values[0],
         ValueCount: values.length,
         type: item.type,
@@ -154,6 +156,8 @@ async function onReload() {
 function onNew() {
   onEdit({
     data: {
+      type: DEFAULT_TYPE,
+      ttl: DEFAUlT_TTL,
       records: [{
         content: null,
       }]

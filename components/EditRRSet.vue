@@ -2,7 +2,7 @@ k<template>
   <q-toolbar>
     <q-toolbar-title>{{ rrset.name ? 'Edit' : 'New' }}</q-toolbar-title>
 
-    <q-btn dense flat round icon="close" @click="drawer.closeRightDrawer"  />
+    <q-btn dense flat round icon="close" @click="drawer.closeRightDrawer(false)"  />
   </q-toolbar>
   <div class="q-px-md">
     <q-input v-model="RrsetZone" label="Zone" borderless disable/>
@@ -16,7 +16,7 @@ k<template>
     <q-input v-for="record in rrset.data.records" v-model="record.content" label="Value"/>
     <q-input v-model="rrset.data.ttl" label="TTL"/>
     <q-btn-group class="q-pt-md" spread flat>
-      <q-btn @click="drawer.closeRightDrawer" color="yellow" label="Cancel" icon="close" flat />
+      <q-btn @click="drawer.closeRightDrawer(false)" color="yellow" label="Cancel" icon="close" flat />
       <q-btn @click="onDelete" color="red" label="Delete" icon="delete" flat/>
       <q-btn @click="onUpdate" color="green" label="Update" icon="visibility" flat/>
     </q-btn-group>

@@ -24,6 +24,7 @@ export const useDrawerStore = defineStore('drawer', {
       this.showRightDrawer = true
     },
     async closeRightDrawer(isCallback) {
+      console.log ('isCallback: ' + isCallback)
       if (isCallback) {
         await this.CloseDrawerCallback()
       } 
