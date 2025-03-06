@@ -1,0 +1,3 @@
+<template>
+  Help Component
+</template>

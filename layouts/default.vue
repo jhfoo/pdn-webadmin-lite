@@ -6,7 +6,7 @@
           PowerDNS Web Admin Lite
         </q-toolbar-title>
 
-        <q-btn dense flat round icon="menu" @click="drawer.toggleRightDrawer" />
+        <q-btn dense flat round icon="menu" @click="onHelp" />
       </q-toolbar>
 
       <q-tabs align="left">
@@ -38,9 +38,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useDrawerStore } from '@/stores/drawer'
-import NewRRSet from '@/components/NewRRSet'
-import EmptyComponent from '@/components/Empty'
+import Empty from '@/components/Empty'
+import Help from '@/components/Help'
 
 const drawer = useDrawerStore()
-drawer.setDrawerComponent(shallowRef(EmptyComponent))
+drawer.setDrawerComponent(shallowRef(Help))
+
+function onHelp() {
+  drawer.setDrawerComponent(shallowRef(Help))
+  drawer.toggleRightDrawer()
+}
 </script>

@@ -9,8 +9,8 @@
       Management is purely via PowerDNS API, authenticated by the API key. If 
       this works for you, proceed!
     </p>
-    {{ $q.screen.width }}
-      <!-- selection="single"
+
+    <!-- selection="single"
       v-model:selected="SelectedRecord"> -->
     <q-table
       :rows="DomainRecords"
@@ -30,7 +30,7 @@
       <template v-slot:body-cell-actions="props">
         <q-td :props="props">
           <q-btn icon="mode_edit" @click="onEdit(props.row)" flat></q-btn>
-          <q-btn v-if="$q.screen.gt.xs" icon="delete" @click="onDelete(props.row)" flat></q-btn>
+          <!-- <q-btn v-if="$q.screen.gt.xs" icon="delete" @click="onDelete(props.row)" flat></q-btn> -->
         </q-td>
       </template>
     </q-table>
