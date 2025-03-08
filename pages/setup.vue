@@ -1,39 +1,31 @@
 <template>
-  <q-page class="q-px-lg">
-    <div class="text-h6">Setup</div>
-    <p class="q-pt-md">
-      Settings are stored in the browser store.
-    </p>
+  <q-page class="q-px-lg q-mt-lg">
+    <q-card class="text-white" style="max-width: 450px; margin: 0 auto" flat>
+      <q-card-section>
+        <div class="text-h6">Settings Storage</div>
+        <div class="text-subtitle2">NOTE<br/>
+          Settings are stored locally on the browser, 
+          <span class="text-red">including the API token</span>. This app is intended
+          for usage in a safe environment.<br/>
+          If your environment or users is/are not trusted please stop using immediately.</div>
+      </q-card-section>
 
-    <!-- selection="single"
-      v-model:selected="SelectedRecord"> -->
-    <q-table
-      :rows="DomainRecords"
-      :columns="columns"
-      row-key="name" dense>
-      <template v-slot:top="props">
-        <div class="q-table__title">{{ route.query.zone }}</div>
+      <q-card-section>
+        <q-form>
+          <q-input v-model="setting.ServerAddress" label="PowerDNS Address"/>
+          <q-input v-model="setting.ServerPort" label="PowerDNS Port"/>
+          <q-input v-model="setting.ApiToken" label="API Token"/>
+        </q-form>
+      </q-card-section>
 
-        <q-space />
+      <q-separator dark />
 
-        <div >
-          <q-btn @click="onReload()" flat>Reload</q-btn>
-          <q-btn @click="onNew()" flat>New</q-btn>
-        </div>
-      </template>
-
-      <template v-slot:body-cell-actions="props">
-        <q-td :props="props">
-          <q-btn icon="mode_edit" @click="onEdit(props.row)" flat></q-btn>
-          <!-- <q-btn v-if="$q.screen.gt.xs" icon="delete" @click="onDelete(props.row)" flat></q-btn> -->
-        </q-td>
-      </template>
-    </q-table>
-
-    {{  SelectedRecord }}
-    <p class="text-h6 q-pt-md">
-      Quasar Default Prop Values
-    </p>
+      <q-card-actions align="right">
+        <q-btn flat>Undo</q-btn>
+        <q-btn @click="onClear" flat>Clear</q-btn>
+        <q-btn @click="onSave" flat>Save</q-btn>
+      </q-card-actions>
+    </q-card>
   </q-page>
 </template>
 
@@ -45,130 +37,29 @@ import EditRRSet from '@/components/EditRRSet'
 import { useRoute } from 'vue-router'
 
 const drawer = useDrawerStore()
-const DomainRecords = ref([])
-const SelectedRecord = ref([])
-const columns = ref([])
 const route = useRoute()
-
 const $q = useQuasar()
 
-columns.value = $q.screen.width > 412 ? [{
-    name: 'rec',
-    label: 'Record',
-    sortable: true,
-    field: row => row.name,
-    align: 'left',
-  }, {
-    name: 'type',
-    label: 'Type',
-    sortable: true,
-    field: row => row.type,
-    align: 'center'
-  }, {
-    name: 'ttl',
-    label: 'TTL',
-    sortable: true,
-    field: row => row.ttl,
-  }, {
-    name: 'value',
-    label: 'Value',
-    sortable: true,
-    field: row => row.value,
-  },{
-    name: 'count',
-    label: 'Count',
-    field: row => row.ValueCount,
-    align: 'center',
-  }, { 
-    name: 'actions', 
-    label: 'Action',
-    align: 'center' 
-  }
-] : [{
-    name: 'rec',
-    label: 'Record',
-    sortable: true,
-    field: row => row.name,
-    align: 'left',
-  },{
-    name: 'value',
-    label: 'Value',
-    sortable: true,
-    field: row => row.value,
-  }, { 
-    name: 'actions', 
-    label: 'Action',
-    align: 'center' 
-  }
-]
+const setting = ref(loadSettings())
 
-const DEFAUlT_TTL = 300
-const DEFAULT_TYPE = 'A'
-await getRecordsInZone('kungfoo.local')
+console.log(setting.value.ServerAddress)
 
-async function getRecordsInZone() {
-  try {
-    const resp = await axios.get('http://192.168.130.25:8081/api/v1/servers/localhost/zones/' + route.query.zone, {
-      headers: {
-        'X-API-KEY': 'changeme'
-      }
-    })
-
-    const MAX_VALUE_LEN = 20
-
-    DomainRecords.value = resp.data.rrsets.map((item) => {
-      const values = item.records.map((record) => {
-        return record.content.length <= MAX_VALUE_LEN ? record.content : record.content.substring(0,MAX_VALUE_LEN - 3) + '...'
-      })
-
-      return {
-        name: item.name.startsWith(route.query.zone) ? '' : item.name.replace('.' + route.query.zone + '.', ''),
-        value: values[0],
-        ValueCount: values.length,
-        type: item.type,
-        ttl: item.ttl,
-        data: item,
-      }
-    }).sort((a,b) => {
-      if (a.name < b.name) {
-        return -1
-      }
-      if (a.name > b.name) {
-        return 1
-      }
-      return 0
-    })
-    console.log(resp.data.rrsets)
-  } catch (err) {
-    console.error(err)
+function loadSettings() {
+  return {
+    ServerAddress: localStorage.getItem('ServerAddress') ?? 'localhost',
+    ServerPort: localStorage.getItem('ServerPort') ?? 9100,
+    ApiToken: localStorage.getItem('ApiToken') ?? 'changeme',
   }
 }
 
-async function onReload() {
-  console.log('Reloading...')
-  await getRecordsInZone(route.query.zone)
+function onClear() {
+  localStorage.clear()
+  setting.value = loadSettings()
 }
 
-function onNew() {
-  onEdit({
-    data: {
-      type: DEFAULT_TYPE,
-      ttl: DEFAUlT_TTL,
-      records: [{
-        content: null,
-      }]
-    }
-  })  
-}
-
-function onEdit(row) {
-  drawer.setDrawerComponent(shallowRef(EditRRSet), 
-    {
-      zone: route.query.zone,
-      rrset: row,
-      // cmdRefresh: onReload,
-    }
-  )
-  drawer.openRightDrawer(onReload)
+function onSave() {
+  localStorage.setItem('ServerAddress', setting.value.ServerAddress)
+  localStorage.setItem('ServerPort', setting.value.ServerPort)
+  localStorage.setItem('ApiToken', setting.value.ApiToken)
 }
 </script>

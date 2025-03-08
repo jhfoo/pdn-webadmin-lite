@@ -10,45 +10,59 @@
       this works for you, proceed!
     </p>
 
-    <!-- selection="single"
-      v-model:selected="SelectedRecord"> -->
-    <q-table
-      @row-click="onClickRow"
-      :rows="zones"
-      :columns="columns"
-      row-key="name" dense>
-      <template v-slot:top="props">
-        <div class="q-table__title">Domains</div>
+    <div v-if="isSetupComplete">
+      <q-table
+        @row-click="onClickRow"
+        :rows="zones"
+        :columns="columns"
+        row-key="name" dense>
+        <template v-slot:top="props">
+          <div class="q-table__title">Domains</div>
 
-        <q-space />
+          <q-space />
 
-        <div >
-          <q-btn @click="onReload()" flat>Reload</q-btn>
-          <q-btn @click="onNew()" flat>New</q-btn>
-        </div>
-      </template>
+          <div >
+            <q-btn @click="onReload()" flat>Reload</q-btn>
+            <q-btn @click="onNew()" flat>New</q-btn>
+          </div>
+        </template>
 
-      <template v-slot:body-cell-actions="props">
-        <q-td :props="props">
-          <q-btn icon="mode_edit" @click="onEdit(props.row)" flat></q-btn>
-          <!-- <q-btn v-if="$q.screen.gt.xs" icon="delete" @click="onDelete(props.row)" flat></q-btn> -->
-        </q-td>
-      </template>
-    </q-table>
+        <template v-slot:body-cell-actions="props">
+          <q-td :props="props">
+            <q-btn icon="mode_edit" @click="onEdit(props.row)" flat></q-btn>
+            <!-- <q-btn v-if="$q.screen.gt.xs" icon="delete" @click="onDelete(props.row)" flat></q-btn> -->
+          </q-td>
+        </template>
+      </q-table>
 
-    {{  SelectedRecord }}
-    <p class="text-h6 q-pt-md">
-      Quasar Default Prop Values
-    </p>
+      {{  SelectedRecord }}
+      <p class="text-h6 q-pt-md">
+        Quasar Default Prop Values
+      </p>
+    </div>
+    <div v-else>
+      <div style="max-width: 400px; margin: 0 auto" align="center">
+        Complete settings in the <a href="/setup">Setup tab</a> first, then<br/>
+        <q-btn @click="checkSetup" class="q-my-md" outline>click here</q-btn><br/>
+        to reload.
+      </div>
+    </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+// route to settings if not set up
+const isSetupComplete = ref(localStorage.getItem('ServerAddress'))
+if (!isSetupComplete) {
+  router.push('/setup')
+}
+
 import axios from 'axios'
 import { useQuasar } from 'quasar'
 import { useDrawerStore } from '@/stores/drawer'
-import { useRouter } from 'vue-router'
-const router = useRouter()
 
 import EditRRSet from '@/components/EditRRSet'
 
@@ -89,6 +103,10 @@ columns.value = $q.screen.width > 412 ? [{
 ]
 
 const zones = await getZones()
+
+function checkSetup() {
+  isSetupComplete.value = localStorage.getItem('ServerAddress')
+}
 
 function onClickRow(evt, row, idx) {
   // console.log(row)

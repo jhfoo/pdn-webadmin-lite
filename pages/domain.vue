@@ -34,11 +34,6 @@
         </q-td>
       </template>
     </q-table>
-
-    {{  SelectedRecord }}
-    <p class="text-h6 q-pt-md">
-      Quasar Default Prop Values
-    </p>
   </q-page>
 </template>
 
