@@ -12,7 +12,7 @@
       <q-tabs align="left">
         <q-route-tab to="/" label="Summary" />
         <q-route-tab to="/domain" label="Domains" />
-        <q-route-tab to="/help" label="Page Three" />
+        <q-route-tab to="/setup" label="Setup" />
       </q-tabs>
     </q-header>
 

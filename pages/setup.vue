@@ -1,13 +1,8 @@
 <template>
   <q-page class="q-px-lg">
-    <div class="text-h6">Domain</div>
+    <div class="text-h6">Setup</div>
     <p class="q-pt-md">
-      This is the web management interface for PowerDNS. It's unofficial, barely 
-      secure, and intended for home use.
-    </p>
-    <p class="">
-      Management is purely via PowerDNS API, authenticated by the API key. If 
-      this works for you, proceed!
+      Settings are stored in the browser store.
     </p>
 
     <!-- selection="single"
