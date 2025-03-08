@@ -117,7 +117,7 @@ function onClickRow(evt, row, idx) {
 
 async function getZones() {
   try {
-    const resp = await axios.get('http://192.168.130.25:8081/api/v1/servers/localhost/zones', {
+    const resp = await axios.get('http://' + localStorage.getItem('ServerAddress') + ':' + localStorage.getItem('ServerPort') + '/api/v1/servers/localhost/zones', {
       headers: {
         'X-API-KEY': 'changeme'
       }
@@ -139,7 +139,7 @@ async function getZones() {
 }
 
 async function getZoneRecords(zone) {
-  const resp = await axios.get('http://192.168.130.25:8081/api/v1/servers/localhost/zones/' + zone, {
+  const resp = await axios.get('http://' + localStorage.getItem('ServerAddress') + ':' + localStorage.getItem('ServerPort') + '/api/v1/servers/localhost/zones/' + zone, {
     headers: {
       'X-API-KEY': 'changeme'
     }

@@ -47,7 +47,7 @@ console.log(setting.value.ServerAddress)
 function loadSettings() {
   return {
     ServerAddress: localStorage.getItem('ServerAddress') ?? 'localhost',
-    ServerPort: localStorage.getItem('ServerPort') ?? 9100,
+    ServerPort: localStorage.getItem('ServerPort') ?? 8081,
     ApiToken: localStorage.getItem('ApiToken') ?? 'changeme',
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <q-page class="q-px-lg">
-    <div class="text-h6">Domain</div>
+    <div class="text-h6">Zone: {{ zone }}</div>
     <p class="q-pt-md">
       This is the web management interface for PowerDNS. It's unofficial, barely 
       secure, and intended for home use.
@@ -104,11 +104,17 @@ columns.value = $q.screen.width > 412 ? [{
 
 const DEFAUlT_TTL = 300
 const DEFAULT_TYPE = 'A'
+let zone = localStorage.getItem('LastDomain')
 await getRecordsInZone('kungfoo.local')
+
+if (route.query.zone) {
+  localStorage.setItem('LastDomain', route.query.zone)
+  zone = route.query.zone
+}
 
 async function getRecordsInZone() {
   try {
-    const resp = await axios.get('http://192.168.130.25:8081/api/v1/servers/localhost/zones/' + route.query.zone, {
+    const resp = await axios.get('http://192.168.130.25:8081/api/v1/servers/localhost/zones/' + zone, {
       headers: {
         'X-API-KEY': 'changeme'
       }
@@ -122,7 +128,7 @@ async function getRecordsInZone() {
       })
 
       return {
-        name: item.name.startsWith(route.query.zone) ? '' : item.name.replace('.' + route.query.zone + '.', ''),
+        name: item.name.startsWith(zone) ? '' : item.name.replace('.' + zone + '.', ''),
         value: values[0],
         ValueCount: values.length,
         type: item.type,
@@ -146,7 +152,7 @@ async function getRecordsInZone() {
 
 async function onReload() {
   console.log('Reloading...')
-  await getRecordsInZone(route.query.zone)
+  await getRecordsInZone(zone)
 }
 
 function onNew() {
@@ -164,7 +170,7 @@ function onNew() {
 function onEdit(row) {
   drawer.setDrawerComponent(shallowRef(EditRRSet), 
     {
-      zone: route.query.zone,
+      zone: zone,
       rrset: row,
       // cmdRefresh: onReload,
     }
