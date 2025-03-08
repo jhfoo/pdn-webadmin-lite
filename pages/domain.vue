@@ -1,6 +1,6 @@
 <template>
   <q-page class="q-px-lg">
-    <div class="text-h6">What is this</div>
+    <div class="text-h6">Domain</div>
     <p class="q-pt-md">
       This is the web management interface for PowerDNS. It's unofficial, barely 
       secure, and intended for home use.
@@ -13,12 +13,11 @@
     <!-- selection="single"
       v-model:selected="SelectedRecord"> -->
     <q-table
-      @row-click="onClickRow"
-      :rows="zones"
+      :rows="DomainRecords"
       :columns="columns"
       row-key="name" dense>
       <template v-slot:top="props">
-        <div class="q-table__title">Domains</div>
+        <div class="q-table__title">{{ zone }}</div>
 
         <q-space />
 
@@ -47,29 +46,44 @@
 import axios from 'axios'
 import { useQuasar } from 'quasar'
 import { useDrawerStore } from '@/stores/drawer'
-import { useRouter } from 'vue-router'
-const router = useRouter()
-
 import EditRRSet from '@/components/EditRRSet'
+import { useRoute } from 'vue-router'
 
 const drawer = useDrawerStore()
 const DomainRecords = ref([])
 const SelectedRecord = ref([])
-const columns = ref([]) 
+const columns = ref([])
+const route = useRoute()
 
 const $q = useQuasar()
 
 columns.value = $q.screen.width > 412 ? [{
     name: 'rec',
-    label: 'Zone',
+    label: 'Record',
     sortable: true,
     field: row => row.name,
     align: 'left',
-  }, { 
-    name: 'RecCount', 
-    label: 'Records',
-    field: row => row.rrsets.length,
-    align: 'center' 
+  }, {
+    name: 'type',
+    label: 'Type',
+    sortable: true,
+    field: row => row.type,
+    align: 'center'
+  }, {
+    name: 'ttl',
+    label: 'TTL',
+    sortable: true,
+    field: row => row.ttl,
+  }, {
+    name: 'value',
+    label: 'Value',
+    sortable: true,
+    field: row => row.value,
+  },{
+    name: 'count',
+    label: 'Count',
+    field: row => row.ValueCount,
+    align: 'center',
   }, { 
     name: 'actions', 
     label: 'Action',
@@ -77,10 +91,15 @@ columns.value = $q.screen.width > 412 ? [{
   }
 ] : [{
     name: 'rec',
-    label: 'Zone',
+    label: 'Record',
     sortable: true,
     field: row => row.name,
     align: 'left',
+  },{
+    name: 'value',
+    label: 'Value',
+    sortable: true,
+    field: row => row.value,
   }, { 
     name: 'actions', 
     label: 'Action',
@@ -88,51 +107,53 @@ columns.value = $q.screen.width > 412 ? [{
   }
 ]
 
-const zones = await getZones()
+const DEFAUlT_TTL = 300
+const DEFAULT_TYPE = 'A'
+await getRecordsInZone('kungfoo.local')
 
-function onClickRow(evt, row, idx) {
-  // console.log(row)
-  // console.log(idx)
-  // console.log('zone = ' + row.name)
-  router.push('/domain?zone=' + row.name.replace(/\.$/,''))
-}
+console.log(route.query.zone)
 
-async function getZones() {
+async function getRecordsInZone(zone) {
   try {
-    const resp = await axios.get('http://192.168.130.25:8081/api/v1/servers/localhost/zones', {
+    const resp = await axios.get('http://192.168.130.25:8081/api/v1/servers/localhost/zones/' + route.query.zone, {
       headers: {
         'X-API-KEY': 'changeme'
       }
     })
 
-    console.log(resp.data)
-    const ret = await Promise.all(resp.data.map(async (item) => {
-      const rrsets = await getZoneRecords(item.name)
-      return {
-        name: item.name,
-        rrsets: rrsets,
-      }
-    }))
+    const MAX_VALUE_LEN = 20
 
-    return ret 
+    DomainRecords.value = resp.data.rrsets.map((item) => {
+      const values = item.records.map((record) => {
+        return record.content.length <= MAX_VALUE_LEN ? record.content : record.content.substring(0,MAX_VALUE_LEN - 3) + '...'
+      })
+
+      return {
+        name: item.name.startsWith(zone) ? '' : item.name.replace('.' + zone + '.', ''),
+        value: values[0],
+        ValueCount: values.length,
+        type: item.type,
+        ttl: item.ttl,
+        data: item,
+      }
+    }).sort((a,b) => {
+      if (a.name < b.name) {
+        return -1
+      }
+      if (a.name > b.name) {
+        return 1
+      }
+      return 0
+    })
+    console.log(resp.data.rrsets)
   } catch (err) {
     console.error(err)
   }
 }
 
-async function getZoneRecords(zone) {
-  const resp = await axios.get('http://192.168.130.25:8081/api/v1/servers/localhost/zones/' + zone, {
-    headers: {
-      'X-API-KEY': 'changeme'
-    }
-  }) 
-  
-  return resp.data.rrsets
-}
-
 async function onReload() {
   console.log('Reloading...')
-  await getRecordsInZone(zone.value)
+  await getRecordsInZone(route.query.zone)
 }
 
 function onNew() {
