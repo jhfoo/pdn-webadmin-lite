@@ -43,6 +43,8 @@ import { useQuasar } from 'quasar'
 import { useDrawerStore } from '@/stores/drawer'
 import EditRRSet from '@/components/EditRRSet'
 import { useRoute } from 'vue-router'
+import { usePdns } from '@/composables/pdns'
+const pdns = usePdns()
 
 const drawer = useDrawerStore()
 const DomainRecords = ref([])
@@ -114,11 +116,7 @@ if (route.query.zone) {
 
 async function getRecordsInZone() {
   try {
-    const resp = await axios.get('http://192.168.130.25:8081/api/v1/servers/localhost/zones/' + zone, {
-      headers: {
-        'X-API-KEY': 'changeme'
-      }
-    })
+    const resp = await pdns.get('/api/v1/servers/localhost/zones/' + zone)
 
     const MAX_VALUE_LEN = 20
 

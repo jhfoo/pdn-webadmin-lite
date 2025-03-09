@@ -63,6 +63,8 @@ if (!isSetupComplete) {
 import axios from 'axios'
 import { useQuasar } from 'quasar'
 import { useDrawerStore } from '@/stores/drawer'
+import { usePdns } from '@/composables/pdns'
+const pdns = usePdns()
 
 import EditRRSet from '@/components/EditRRSet'
 
@@ -117,12 +119,7 @@ function onClickRow(evt, row, idx) {
 
 async function getZones() {
   try {
-    const resp = await axios.get('http://' + localStorage.getItem('ServerAddress') + ':' + localStorage.getItem('ServerPort') + '/api/v1/servers/localhost/zones', {
-      headers: {
-        'X-API-KEY': 'changeme'
-      }
-    })
-
+    const resp = await pdns.get('/api/v1/servers/localhost/zones')
     console.log(resp.data)
     const ret = await Promise.all(resp.data.map(async (item) => {
       const rrsets = await getZoneRecords(item.name)
@@ -139,12 +136,7 @@ async function getZones() {
 }
 
 async function getZoneRecords(zone) {
-  const resp = await axios.get('http://' + localStorage.getItem('ServerAddress') + ':' + localStorage.getItem('ServerPort') + '/api/v1/servers/localhost/zones/' + zone, {
-    headers: {
-      'X-API-KEY': 'changeme'
-    }
-  }) 
-  
+  const resp = await pdns.get('/api/v1/servers/localhost/zones/' + zone)  
   return resp.data.rrsets
 }
 

@@ -27,8 +27,11 @@ k<template>
 import { useDrawerStore } from '@/stores/drawer'
 import axios from 'axios'
 import { useQuasar } from 'quasar'
-
 const $q = useQuasar()
+
+import { usePdns } from '@/composables/pdns'
+const pdns = usePdns()
+
 const drawer = useDrawerStore()
 const props = defineProps(['zone', 'rrset'])
 const RrsetZone = props.zone
@@ -70,12 +73,8 @@ async function onDelete() {
 }
 
 async function patchPdns(payload) {
-  return await axios.patch('http://192.168.130.25:8081/api/v1/servers/localhost/zones/' + props.zone, {
+  return pdns.patch('/api/v1/servers/localhost/zones/' + props.zone, {
     rrsets: [payload],
-  }, {
-    headers: {
-      'X-API-KEY': 'changeme'
-    }
   })
 }
 
